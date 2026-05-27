@@ -50,6 +50,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listQuotes
+      tags: [quotes]
+      summary: List all quote requests
+      responses:
+        "200":
+          description: List of quote requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuoteItem"
 components:
   schemas:
     HealthStatus:
@@ -96,6 +109,39 @@ components:
       required:
         - id
         - message
+    QuoteItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        company:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        cargoType:
+          type: string
+        message:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - company
+        - phone
+        - email
+        - origin
+        - destination
+        - cargoType
+        - createdAt
     ErrorResponse:
       type: object
       properties:

@@ -9,4 +9,5 @@
 export * from './errorResponse';
 export * from './healthStatus';
 export * from './quoteInput';
+export * from './quoteItem';
 export * from './quoteResponse';

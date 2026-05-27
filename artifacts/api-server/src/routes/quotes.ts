@@ -1,9 +1,20 @@
 import { Router, type IRouter } from "express";
+import { desc } from "drizzle-orm";
 import { db } from "@workspace/db";
 import { quoteRequestsTable } from "@workspace/db/schema";
 import { SubmitQuoteBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
+
+router.get("/quotes", async (req, res): Promise<void> => {
+  const rows = await db
+    .select()
+    .from(quoteRequestsTable)
+    .orderBy(desc(quoteRequestsTable.createdAt));
+
+  req.log.info({ count: rows.length }, "Listed quote requests");
+  res.json(rows);
+});
 
 router.post("/quotes", async (req, res): Promise<void> => {
   const parsed = SubmitQuoteBody.safeParse(req.body);

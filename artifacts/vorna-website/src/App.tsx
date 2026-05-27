@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { Switch, Route } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import Admin from "@/pages/Admin";
 import { ArrowRight, MapPin, ShieldCheck, Anchor, CheckCircle2, Truck, Users, Network, X, Send, CheckCircle } from "lucide-react";
 import { useSubmitQuote } from "@workspace/api-client-react";
 
@@ -491,7 +493,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Home />
+        <Switch>
+          <Route path="/admin" component={Admin} />
+          <Route component={Home} />
+        </Switch>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

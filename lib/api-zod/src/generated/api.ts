@@ -32,3 +32,21 @@ export const SubmitQuoteBody = zod.object({
 })
 
 
+/**
+ * @summary List all quote requests
+ */
+export const ListQuotesResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "company": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "origin": zod.string(),
+  "destination": zod.string(),
+  "cargoType": zod.string(),
+  "message": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const ListQuotesResponse = zod.array(ListQuotesResponseItem)
+
+

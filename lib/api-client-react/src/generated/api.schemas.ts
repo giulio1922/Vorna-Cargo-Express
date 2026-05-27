@@ -26,6 +26,20 @@ export interface QuoteResponse {
   message: string;
 }
 
+export interface QuoteItem {
+  id: number;
+  name: string;
+  company: string;
+  phone: string;
+  email: string;
+  origin: string;
+  destination: string;
+  cargoType: string;
+  /** @nullable */
+  message?: string | null;
+  createdAt: string;
+}
+
 export interface ErrorResponse {
   error: string;
 }
