@@ -1,0 +1,32 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ASXPLG1gEJNn1HczBjBXC"
+uri = "file://artifacts/vorna-website/src/assets/hero.png"
+type = "image"
+title = "Heavy cargo truck on highway"
+
+[[generated]]
+id = "nj3LArU219ZKsiJNfOK_x"
+uri = "file://artifacts/vorna-website/src/assets/control.png"
+type = "image"
+title = "Logistics control center operator"
+
+[[generated]]
+id = "FXb9MI5P5jsPDQ2wqFZzm"
+uri = "file://artifacts/vorna-website/src/assets/warehouse.png"
+type = "image"
+title = "Warehouse operations loading cargo"
+
+[[generated]]
+id = "LyPKYrZ1mEhID6wGIRz6K"
+uri = "file://artifacts/vorna-website/src/assets/fleet.png"
+type = "image"
+title = "Fleet of modern cargo trucks"
+
+[[generated]]
+id = "oam8A3D6sAUmS2eY4xPPn"
+uri = "file://artifacts/vorna-website/src/assets/driver.png"
+type = "image"
+title = "Professional truck driver portrait"
