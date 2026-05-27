@@ -34,7 +34,7 @@ function Home() {
   return (
     <div className="min-h-screen w-full bg-background font-sans overflow-hidden selection:bg-accent selection:text-secondary">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center mix-blend-difference text-white">
+      <nav className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center text-white bg-secondary/80 backdrop-blur-sm">
         <div className="text-2xl font-black tracking-tighter uppercase">VORNA</div>
         <div className="hidden md:flex gap-8 font-medium text-sm uppercase tracking-widest">
           <a href="#services" className="hover:text-accent transition-colors">Servicios</a>
