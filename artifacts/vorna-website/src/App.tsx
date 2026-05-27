@@ -240,9 +240,9 @@ function Home() {
           <div>
             <h4 className="font-bold mb-6 uppercase tracking-widest text-sm text-white/50">Contacto</h4>
             <ul className="space-y-4 font-medium">
-              <li>+593 99 999 9999</li>
-              <li>info@vornalogistics.com</li>
-              <li>Quito, Ecuador</li>
+              <li>+593 99 745 1510</li>
+              <li>gabriel_martinez@vornalogistics.com</li>
+              <li>Guayaquil, Ecuador</li>
             </ul>
           </div>
           <div>
