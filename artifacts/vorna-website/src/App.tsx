@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, MapPin, ShieldCheck, Anchor, CheckCircle2, Truck, Users, Network } from "lucide-react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { ArrowRight, MapPin, ShieldCheck, Anchor, CheckCircle2, Truck, Users, Network, X, Send, CheckCircle } from "lucide-react";
+import { useSubmitQuote } from "@workspace/api-client-react";
 
 import heroImg from "./assets/hero.png";
 import controlImg from "./assets/control.png";
@@ -26,13 +28,228 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
+type FormData = {
+  name: string;
+  company: string;
+  phone: string;
+  email: string;
+  origin: string;
+  destination: string;
+  cargoType: string;
+  message: string;
+};
+
+const CARGO_TYPES = [
+  "Carga General",
+  "Carga Pesada / Sobredimensionada",
+  "Materiales de Construcción",
+  "Equipos Industriales",
+  "Productos Agrícolas",
+  "Productos Peligrosos",
+  "Otro",
+];
+
+function QuoteModal({ onClose }: { onClose: () => void }) {
+  const [form, setForm] = useState<FormData>({
+    name: "", company: "", phone: "", email: "",
+    origin: "", destination: "", cargoType: "", message: "",
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const { mutate, isPending } = useSubmitQuote({
+    mutation: {
+      onSuccess: () => setSubmitted(true),
+    },
+  });
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    mutate({ data: { ...form, message: form.message || null } });
+  }
+
+  const inputClass = "w-full bg-white/5 border border-white/20 text-white placeholder-white/30 px-4 py-3 font-medium text-sm focus:outline-none focus:border-accent transition-colors";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+      style={{ backdropFilter: "blur(8px)", backgroundColor: "rgba(3, 33, 21, 0.85)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      data-testid="modal-quote"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 40, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 20, scale: 0.97 }}
+        transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
+        className="relative w-full max-w-2xl bg-secondary border border-white/10 overflow-y-auto max-h-[90vh]"
+        onClick={e => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors z-10"
+          data-testid="button-close-modal"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        <div className="p-8 md:p-12">
+          {submitted ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-12"
+              data-testid="quote-success"
+            >
+              <CheckCircle className="w-16 h-16 text-accent mx-auto mb-6" />
+              <h2 className="text-3xl font-black text-white mb-4 tracking-tighter">Solicitud recibida.</h2>
+              <p className="text-white/60 text-lg mb-8">
+                Nos pondremos en contacto con usted en las próximas horas.
+              </p>
+              <button
+                onClick={onClose}
+                className="bg-accent text-secondary px-8 py-4 font-black uppercase tracking-widest text-sm hover:bg-white transition-colors"
+                data-testid="button-close-success"
+              >
+                Cerrar
+              </button>
+            </motion.div>
+          ) : (
+            <>
+              <div className="mb-10">
+                <p className="text-accent font-bold tracking-widest uppercase text-xs flex items-center gap-3 mb-4">
+                  <span className="w-8 h-[2px] bg-accent inline-block" /> Solicitud de cotización
+                </p>
+                <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter">
+                  Cuéntenos sobre <span className="text-accent italic">su carga.</span>
+                </h2>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4" data-testid="form-quote">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Nombre *</label>
+                    <input
+                      name="name" value={form.name} onChange={handleChange}
+                      required placeholder="Gabriel Martínez"
+                      className={inputClass} data-testid="input-name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Empresa *</label>
+                    <input
+                      name="company" value={form.company} onChange={handleChange}
+                      required placeholder="Su empresa S.A."
+                      className={inputClass} data-testid="input-company"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Teléfono *</label>
+                    <input
+                      name="phone" value={form.phone} onChange={handleChange}
+                      required placeholder="+593 99 000 0000"
+                      className={inputClass} data-testid="input-phone"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Correo *</label>
+                    <input
+                      name="email" type="email" value={form.email} onChange={handleChange}
+                      required placeholder="contacto@empresa.com"
+                      className={inputClass} data-testid="input-email"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Origen *</label>
+                    <input
+                      name="origin" value={form.origin} onChange={handleChange}
+                      required placeholder="Guayaquil"
+                      className={inputClass} data-testid="input-origin"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Destino *</label>
+                    <input
+                      name="destination" value={form.destination} onChange={handleChange}
+                      required placeholder="Quito"
+                      className={inputClass} data-testid="input-destination"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Tipo de carga *</label>
+                  <select
+                    name="cargoType" value={form.cargoType} onChange={handleChange}
+                    required className={`${inputClass} appearance-none`}
+                    data-testid="select-cargo-type"
+                  >
+                    <option value="" disabled className="bg-secondary">Seleccione una opción</option>
+                    {CARGO_TYPES.map(t => (
+                      <option key={t} value={t} className="bg-secondary">{t}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Mensaje adicional</label>
+                  <textarea
+                    name="message" value={form.message} onChange={handleChange}
+                    rows={3} placeholder="Detalles adicionales sobre su carga, plazos o requisitos especiales..."
+                    className={`${inputClass} resize-none`} data-testid="textarea-message"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="w-full bg-accent text-secondary py-4 font-black uppercase tracking-widest text-sm hover:bg-white transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                  data-testid="button-submit-quote"
+                >
+                  {isPending ? (
+                    <span className="flex items-center gap-3">
+                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full" />
+                      Enviando...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-3">
+                      Enviar solicitud <Send className="w-4 h-4" />
+                    </span>
+                  )}
+                </button>
+              </form>
+            </>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function Home() {
+  const [quoteOpen, setQuoteOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const yImage = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
 
   return (
     <div className="min-h-screen w-full bg-background font-sans overflow-hidden selection:bg-accent selection:text-secondary">
+      <AnimatePresence>
+        {quoteOpen && <QuoteModal onClose={() => setQuoteOpen(false)} />}
+      </AnimatePresence>
+
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center text-white bg-secondary/80 backdrop-blur-sm">
         <div className="text-2xl font-black tracking-tighter uppercase">VORNA</div>
@@ -42,7 +259,11 @@ function Home() {
           <a href="#about" className="hover:text-accent transition-colors">Nosotros</a>
           <a href="#contact" className="hover:text-accent transition-colors">Contacto</a>
         </div>
-        <button className="bg-accent text-secondary px-6 py-3 font-bold text-sm uppercase tracking-widest hover:bg-white transition-colors" data-testid="button-quote">
+        <button
+          onClick={() => setQuoteOpen(true)}
+          className="bg-accent text-secondary px-6 py-3 font-bold text-sm uppercase tracking-widest hover:bg-white transition-colors"
+          data-testid="button-quote"
+        >
           Cotizar
         </button>
       </nav>
@@ -223,7 +444,11 @@ function Home() {
             <p className="text-xl text-white/70 mb-12 max-w-2xl mx-auto">
               Transforme cómo gestiona su cadena de suministro. Combine dirección estratégica con un servicio humano y cercano.
             </p>
-            <button className="bg-accent text-secondary px-10 py-5 text-lg font-black uppercase tracking-widest hover:bg-white hover:scale-105 transition-all flex items-center gap-4 mx-auto" data-testid="button-contact">
+            <button
+              onClick={() => setQuoteOpen(true)}
+              className="bg-accent text-secondary px-10 py-5 text-lg font-black uppercase tracking-widest hover:bg-white hover:scale-105 transition-all flex items-center gap-4 mx-auto"
+              data-testid="button-contact"
+            >
               Hablemos <ArrowRight className="w-6 h-6" />
             </button>
           </FadeIn>
@@ -235,13 +460,13 @@ function Home() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/10 pb-12 mb-12">
           <div className="col-span-1 md:col-span-2">
             <div className="text-3xl font-black tracking-tighter uppercase mb-6 text-accent">VORNA</div>
-            <p className="text-white/50 max-w-sm">Ecuador's most reliable and modern logistics brand, moving trust, security, and commitment.</p>
+            <p className="text-white/50 max-w-sm">La marca logística ecuatoriana más confiable y moderna del sector, moviendo confianza, seguridad y compromiso.</p>
           </div>
           <div>
             <h4 className="font-bold mb-6 uppercase tracking-widest text-sm text-white/50">Contacto</h4>
             <ul className="space-y-4 font-medium">
-              <li>+593 99 745 1510</li>
-              <li>gabriel_martinez@vornalogistics.com</li>
+              <li><a href="tel:+593997451510" className="hover:text-accent transition-colors">+593 99 745 1510</a></li>
+              <li><a href="mailto:gabriel_martinez@vornalogistics.com" className="hover:text-accent transition-colors break-all">gabriel_martinez@vornalogistics.com</a></li>
               <li>Guayaquil, Ecuador</li>
             </ul>
           </div>

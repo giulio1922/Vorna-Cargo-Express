@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: quotes
+    description: Quote request operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /quotes:
+    post:
+      operationId: submitQuote
+      tags: [quotes]
+      summary: Submit a quote request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteInput"
+      responses:
+        "201":
+          description: Quote request received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +59,47 @@ components:
           type: string
       required:
         - status
-
+    QuoteInput:
+      type: object
+      properties:
+        name:
+          type: string
+        company:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        cargoType:
+          type: string
+        message:
+          type: ["string", "null"]
+      required:
+        - name
+        - company
+        - phone
+        - email
+        - origin
+        - destination
+        - cargoType
+    QuoteResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        message:
+          type: string
+      required:
+        - id
+        - message
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
