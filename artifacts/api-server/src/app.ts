@@ -1,6 +1,6 @@
 import express from "express";
-import cors from "cors";
-import pinoHttp from "pino-http";
+import * as corsModule from "cors";
+import * as pinoHttpModule from "pino-http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import router from "./routes/index.js";
@@ -8,6 +8,9 @@ import { logger } from "./lib/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const cors = (corsModule as any).default ?? corsModule;
+const pinoHttp = (pinoHttpModule as any).default ?? pinoHttpModule;
 
 const app = express();
 
