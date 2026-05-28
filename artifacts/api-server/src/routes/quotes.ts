@@ -1,10 +1,10 @@
-import { Router, type IRouter } from "express";
+import { Router } from "express";
 import { desc } from "drizzle-orm";
 import { db } from "@workspace/db";
 import { quoteRequestsTable } from "@workspace/db/schema";
 import { SubmitQuoteBody } from "@workspace/api-zod";
 
-const router: IRouter = Router();
+const router = Router();
 
 router.get("/quotes", async (req, res): Promise<void> => {
   const rows = await db
