@@ -1,12 +1,10 @@
 import { Router } from "express";
-import { desc } from "drizzle-orm";
-import { db } from "@workspace/db";
-import { quoteRequestsTable } from "@workspace/db/schema";
+import { desc, db, quoteRequestsTable } from "@workspace/db";
 import { SubmitQuoteBody } from "@workspace/api-zod";
 
 const router = Router();
 
-router.get("/quotes", async (req, res): Promise<void> => {
+router.get("/quotes", async (req: any, res: any): Promise<void> => {
   const rows = await db
     .select()
     .from(quoteRequestsTable)
@@ -16,7 +14,7 @@ router.get("/quotes", async (req, res): Promise<void> => {
   res.json(rows);
 });
 
-router.post("/quotes", async (req, res): Promise<void> => {
+router.post("/quotes", async (req: any, res: any): Promise<void> => {
   const parsed = SubmitQuoteBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
