@@ -1,0 +1,8 @@
+{
+  "buildCommand": "pnpm run build && rm -rf public && cp -r artifacts/vorna-website/dist public",
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.ts" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
