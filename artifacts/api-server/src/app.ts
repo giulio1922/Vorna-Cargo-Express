@@ -1,28 +1,28 @@
-import express, { type Express } from "express";
+import express from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
-import path from "path";
-import { fileURLToPath } from "url";
-import router from "./routes";
-import { logger } from "./lib/logger";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import router from "./routes/index.js";
+import { logger } from "./lib/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app: Express = express();
+const app = express();
 
 app.use(
   pinoHttp({
     logger,
     serializers: {
-      req(req) {
+      req(req: any) {
         return {
           id: req.id,
           method: req.method,
           url: req.url?.split("?")[0],
         };
       },
-      res(res) {
+      res(res: any) {
         return {
           statusCode: res.statusCode,
         };
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV !== "development" && !process.env.VERCEL) {
   const frontendDistPath = path.join(__dirname, "../../vorna-website/dist");
   app.use(express.static(frontendDistPath));
 
-  app.get("*", (req, res) => {
+  app.get("*", (req: any, res: any) => {
     res.sendFile(path.join(frontendDistPath, "index.html"));
   });
 }
