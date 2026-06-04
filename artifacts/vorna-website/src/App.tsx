@@ -110,7 +110,7 @@ function QuoteModal({ onClose }: { onClose: () => void }) {
               data-testid="quote-success"
             >
               <CheckCircle className="w-16 h-16 text-accent mx-auto mb-6" />
-              <h2 className="text-3xl font-black text-white mb-4 tracking-tighter">Solicitud recibida.</h2>
+              <h2 className="text-3xl font-black text-white mb-4 tracking-tighter">Datos enviados exitosamente!</h2>
               <p className="text-white/60 text-lg mb-8">
                 Nos pondremos en contacto con usted en las próximas horas.
               </p>

@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { desc, db, quoteRequestsTable } from "@workspace/db";
 import { SubmitQuoteBody } from "@workspace/api-zod";
+import { Resend } from "resend";
+
+const resend = new Resend("re_5jd64ipE_9icnzPTwUgofSoWRPT21QHhd");
 
 const router = Router();
 
@@ -26,7 +29,28 @@ router.post("/quotes", async (req: any, res: any): Promise<void> => {
     .values(parsed.data)
     .returning({ id: quoteRequestsTable.id });
 
-  req.log.info({ quoteId: row.id }, "Quote request received");
+  try {
+    await resend.emails.send({
+      from: 'Vorna Logistics <noreply@vornalogistics.com>',
+      to: ['manuel_martinez@vornalogistics.com', 'gabriel_martinez@vornalogistics.com'],
+      subject: `Nueva Solicitud de Cotización: ${parsed.data.company}`,
+      html: `
+        <h2>Nueva Solicitud de Cotización</h2>
+        <p><strong>Nombre:</strong> ${parsed.data.name}</p>
+        <p><strong>Empresa:</strong> ${parsed.data.company}</p>
+        <p><strong>Teléfono:</strong> ${parsed.data.phone}</p>
+        <p><strong>Correo:</strong> ${parsed.data.email}</p>
+        <p><strong>Origen:</strong> ${parsed.data.origin}</p>
+        <p><strong>Destino:</strong> ${parsed.data.destination}</p>
+        <p><strong>Tipo de Carga:</strong> ${parsed.data.cargoType}</p>
+        <p><strong>Mensaje:</strong> ${parsed.data.message || 'N/A'}</p>
+      `
+    });
+  } catch (error) {
+    req.log.error({ error }, "Failed to send email with Resend");
+  }
+
+  req.log.info({ quoteId: row.id }, "Quote request received and email sent");
 
   res.status(201).json({ id: row.id, message: "Solicitud recibida. Nos pondremos en contacto pronto." });
 });
