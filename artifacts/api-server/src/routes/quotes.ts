@@ -7,6 +7,7 @@ const resend = new Resend("re_5jd64ipE_9icnzPTwUgofSoWRPT21QHhd");
 
 const router = Router();
 
+/*
 router.get("/quotes", async (req: any, res: any): Promise<void> => {
   const rows = await db
     .select()
@@ -16,6 +17,7 @@ router.get("/quotes", async (req: any, res: any): Promise<void> => {
   req.log.info({ count: rows.length }, "Listed quote requests");
   res.json(rows);
 });
+*/
 
 router.post("/quotes", async (req: any, res: any): Promise<void> => {
   const parsed = SubmitQuoteBody.safeParse(req.body);
@@ -24,10 +26,12 @@ router.post("/quotes", async (req: any, res: any): Promise<void> => {
     return;
   }
 
+  /*
   const [row] = await db
     .insert(quoteRequestsTable)
     .values(parsed.data)
     .returning({ id: quoteRequestsTable.id });
+  */
 
   try {
     await resend.emails.send({
@@ -50,9 +54,9 @@ router.post("/quotes", async (req: any, res: any): Promise<void> => {
     req.log.error({ error }, "Failed to send email with Resend");
   }
 
-  req.log.info({ quoteId: row.id }, "Quote request received and email sent");
+  req.log.info("Quote request received and email sent");
 
-  res.status(201).json({ id: row.id, message: "Solicitud recibida. Nos pondremos en contacto pronto." });
+  res.status(201).json({ message: "Solicitud recibida. Nos pondremos en contacto pronto." });
 });
 
 export default router;

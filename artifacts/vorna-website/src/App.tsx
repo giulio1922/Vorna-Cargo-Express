@@ -4,9 +4,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import Admin from "@/pages/Admin";
+// import Admin from "@/pages/Admin";
 import { ArrowRight, MapPin, ShieldCheck, Anchor, CheckCircle2, Truck, Users, Network, X, Send, CheckCircle } from "lucide-react";
 import { useSubmitQuote } from "@workspace/api-client-react";
+import { useToast } from "@/hooks/use-toast";
 
 import heroImg from "./assets/hero.png";
 import controlImg from "./assets/control.png";
@@ -58,9 +59,17 @@ function QuoteModal({ onClose }: { onClose: () => void }) {
   });
   const [submitted, setSubmitted] = useState(false);
 
+  const { toast } = useToast();
   const { mutate, isPending } = useSubmitQuote({
     mutation: {
       onSuccess: () => setSubmitted(true),
+      onError: (err) => {
+        toast({
+          title: "Error al enviar",
+          description: err.message || "Ocurrió un problema al enviar la solicitud.",
+          variant: "destructive",
+        });
+      },
     },
   });
 
@@ -494,7 +503,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Switch>
-          <Route path="/admin" component={Admin} />
+          {/* <Route path="/admin" component={Admin} /> */}
           <Route component={Home} />
         </Switch>
         <Toaster />
