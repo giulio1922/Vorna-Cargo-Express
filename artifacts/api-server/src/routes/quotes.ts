@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { desc, db, quoteRequestsTable } from "@workspace/db";
 import { SubmitQuoteBody } from "@workspace/api-zod";
 import { Resend } from "resend";
 
